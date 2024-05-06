@@ -1,6 +1,6 @@
 'use client';
 import React,{useState,useEffect} from "react";
-import { collection, addDoc } from "firebase/firestore"; 
+import { collection, addDoc,getDoc,QuerySnapshot, onSnapshot,query } from "firebase/firestore"; 
 import {db} from './firebase'
 export default function Home() {
   const [items,setitems] = useState([
@@ -23,7 +23,16 @@ export default function Home() {
   };
 
   // read items from database
-
+  useEffect(()=>{
+    const q = query(collection(db,'items'))
+    const unsubscribe = onSnapshot(q,(QuerySnapshot)=>{
+      let itemsArray = []
+      QuerySnapshot.forEach((doc) => {
+        itemsArray.push({...doc.data(), id:doc._id})
+      })
+      setitems(itemsArray)
+    })
+  },[])
   // delete items from database
 
   return (
